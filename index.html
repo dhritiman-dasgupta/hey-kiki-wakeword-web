@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hey KiKi — Wake Word Detector</title>
+<style>
+  :root { --bg:#0b1020; --card:#151c34; --accent:#5b8cff; --good:#27c08a; --text:#e7ecff; --muted:#8b96bd; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,Segoe UI,Roboto,sans-serif;
+        background: radial-gradient(1200px 600px at 50% -10%, #1a2350 0%, transparent 60%), var(--bg);
+        color:var(--text); min-height:100vh; }
+  .wrap { max-width:720px; margin:0 auto; padding:32px 20px 60px; }
+  h1 { font-size:30px; margin:0 0 4px; letter-spacing:-0.02em; }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid #232c4d; border-radius:16px; padding:22px; margin-bottom:18px; }
+  button { font:inherit; border:0; border-radius:10px; padding:12px 18px; cursor:pointer; font-weight:600; }
+  .primary { background:var(--accent); color:#fff; }
+  .primary:disabled { opacity:.5; cursor:default; }
+  .ghost { background:#222b4d; color:var(--text); }
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .meter { height:26px; background:#0e1430; border-radius:8px; overflow:hidden; border:1px solid #283157; }
+  .meter > div { height:100%; width:0%; background:linear-gradient(90deg,#3a63d0,#5b8cff); transition:width .05s linear; }
+  .meter.hit > div { background:linear-gradient(90deg,#1f9e72,#27c08a); }
+  .score { font-variant-numeric:tabular-nums; font-size:34px; font-weight:700; margin:6px 0 2px; }
+  .status { color:var(--muted); font-size:14px; }
+  .badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:600; }
+  .badge.idle { background:#26304f; color:var(--muted); }
+  .badge.live { background:#1c3b30; color:var(--good); }
+  label { font-size:14px; color:var(--muted); }
+  input[type=range]{ width:200px; }
+  .log { font-family:ui-monospace,Consolas,monospace; font-size:13px; max-height:180px; overflow:auto; }
+  .log div { padding:3px 0; border-bottom:1px solid #1d2546; }
+  .pill { font-size:12px; color:var(--muted); }
+  a { color:var(--accent); }
+  .warn { background:#2a2336; border:1px solid #5a3f2e; color:#f1c79a; font-size:13.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔊 Hey KiKi <span class="pill">wake-word detector</span></h1>
+  <p class="sub">Runs the trained ONNX model <b>entirely in your browser</b> (onnxruntime-web + your mic). No audio leaves your device.</p>
+
+  <div class="card" id="loadCard">
+    <div class="status" id="loadStatus">Loading models…</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <span class="badge idle" id="state">idle</span>
+      <div class="row">
+        <label>threshold <span id="thVal">0.50</span></label>
+        <input type="range" id="th" min="0" max="1" step="0.01" value="0.5" />
+      </div>
+    </div>
+    <div class="score" id="score">0.000</div>
+    <div class="meter" id="meter"><div></div></div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="mic" disabled>🎙️ Start listening</button>
+      <button class="ghost" id="stop" disabled>Stop</button>
+    </div>
+    <p class="status" id="last"></p>
+  </div>
+
+  <div class="card">
+    <b>Test an audio file</b>
+    <p class="status">Pick a .wav/.mp3/.m4a/.aac clip — it's scored offline and shows the peak confidence.</p>
+    <div class="row">
+      <input type="file" id="file" accept="audio/*" />
+      <button class="ghost" id="run" disabled>Score file</button>
+    </div>
+    <p class="status" id="fileResult"></p>
+  </div>
+
+  <div class="card log" id="log"><div>detections will appear here…</div></div>
+
+  <div class="card warn">
+    ⚠️ This demo model was trained small (validation run, ~0 recall), so live detection
+    will be weak. The app is correct — swap in a production-trained <code>hey_kiki.onnx</code>
+    (more samples/steps) for real accuracy.
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
