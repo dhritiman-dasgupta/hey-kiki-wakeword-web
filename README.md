@@ -4,7 +4,7 @@ A static web app that runs a trained **openWakeWord** model **entirely in your b
 using [onnxruntime-web](https://onnxruntime.ai/) and the Web Audio API. Your microphone
 audio never leaves your device.
 
-**Live:** see the GitHub Pages URL for this repo.
+**Live demo:** **<https://dhritiman-dasgupta.github.io/hey-kiki-wakeword-web/>** — say "hey kiki" into your mic; detection runs entirely in your browser, nothing is uploaded.
 
 ## What it does
 - Loads three ONNX models in the browser: `melspectrogram` → `embedding` → `hey_kiki` (the wake-word classifier).
